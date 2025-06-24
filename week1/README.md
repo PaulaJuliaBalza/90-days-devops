@@ -9,3 +9,4 @@ Contenido:
 **Proyecto:** Levantar una aplicación local (sin Docker) en una máquina virtual con Vagrant, automatizando la instalación y configuración con Ansible.
 
 **Herramientas:** Linux, Ansible, Vagrant
+
