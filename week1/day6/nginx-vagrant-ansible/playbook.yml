@@ -1,0 +1,65 @@
+- name: Configurar servidor en VM Vagrant
+  hosts: webservers
+  become: yes
+
+  vars:
+    ssh_user: devopsuser
+
+  tasks:
+    - name: Instalar dependencias necesarias
+      apt:
+        name:
+          - nginx
+          - ufw
+        state: present
+        update_cache: yes
+
+    - name: Copiar página HTML personalizada
+      copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+        mode: '0644'
+
+    - name: Asegurar que Nginx esté activo
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Crear usuario con acceso SSH
+      user:
+        name: "{{ ssh_user }}"
+        shell: /bin/bash
+        create_home: yes
+
+    - name: Crear carpeta .ssh
+      file:
+        path: "/home/{{ ssh_user }}/.ssh"
+        state: directory
+        owner: "{{ ssh_user }}"
+        group: "{{ ssh_user }}"
+        mode: '0700'
+
+    - name: Copiar clave pública al usuario
+      copy:
+        src: files/id_rsa.pub
+        dest: "/home/{{ ssh_user }}/.ssh/authorized_keys"
+        owner: "{{ ssh_user }}"
+        group: "{{ ssh_user }}"
+        mode: '0600'
+
+    - name: Configurar UFW - permitir SSH
+      ufw:
+        rule: allow
+        name: OpenSSH
+
+    - name: Configurar UFW - permitir HTTP
+      ufw:
+        rule: allow
+        port: "80"
+        proto: tcp
+
+    - name: Habilitar UFW con política por defecto en DENY
+      ufw:
+        state: enabled
+        policy: deny
