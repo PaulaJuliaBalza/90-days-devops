@@ -1,5 +1,5 @@
 # Ignorar la clave privada SSH
-files/id_rsa
+nginx-vagrant-ansible/files/id_rsa.pub
 
 # Ignorar el directorio de estado de Vagrant
 .vagrant/
