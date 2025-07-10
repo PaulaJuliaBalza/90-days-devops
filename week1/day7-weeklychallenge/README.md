@@ -147,9 +147,12 @@ README.md  Vagrantfile  provision.yml  roxs-voting-app  start_app.sh
 chmod +x start_app.sh
 ./start_app.sh 
 ```
-Postgresql issue:
+
+Postgresql issue when creating DB
+
 https://stackoverflow.com/questions/73059780/using-ansible-to-create-postgres-user-on-aws-vps-ubuntu-22-04 
 
+```
 vagrant@ubuntu-jammy:/vagrant$ psql -U postgres -d votes -h 127.0.0.1
 Password for user postgres: 
 psql (14.18 (Ubuntu 14.18-0ubuntu0.22.04.1))
@@ -163,4 +166,5 @@ votes=# SELECT * FROM votes;
 (1 row)
 
 votes=# 
+```
 
