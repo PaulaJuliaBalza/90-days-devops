@@ -1,0 +1,11 @@
+# Archivos generados por Vagrant
+.vagrant/
+*.box
+
+# Claves privadas
+**/private_key
+*.pem
+*.key
+id_rsa*
+id_ecdsa*
+id_ed25519*

@@ -1,0 +1,16 @@
+- name: Ensure devops user exists with password and shell
+  ansible.builtin.user:
+    name: devops
+    password: "{{ 'your_password' | password_hash('sha512') }}"
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    state: present
+
+- name: Allow passwordless sudo for devops user
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers.d/devops
+    create: yes
+    mode: '0440'
+    line: 'devops ALL=(ALL) NOPASSWD:ALL'
+    validate: '/usr/sbin/visudo -cf %s'

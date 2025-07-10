@@ -1,0 +1,15 @@
+# Ignorar la clave privada SSH
+nginx-vagrant-ansible/files/id_rsa.pub
+
+# Ignorar el directorio de estado de Vagrant
+.vagrant/
+
+# Archivos temporales
+*.log
+*.swp
+*.bak
+*.tmp
+*~
+
+# Archivos de Ansible cache (fact caching local)
+.fact-cache/

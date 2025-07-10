@@ -1,0 +1,8 @@
+- name: Application deployment with Nginx, devops user, and firewall
+  hosts: all
+  become: yes
+
+  roles:
+    - nginx
+    - users 
+    - firewall

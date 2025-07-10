@@ -1,0 +1,82 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: "Asegurar que el paquete 'acl' esté instalado (soluciona problemas de become_user)"
+      tags: packages
+      apt:
+        name: acl
+        state: present
+        update_cache: yes
+
+    - name: "Instalar paquetes base del sistema (apt)"
+      tags: packages
+      apt:
+        name:
+          - python3
+          - python3-pip
+          - nodejs
+          - npm
+          - redis-server
+          - postgresql
+          - postgresql-contrib
+          - build-essential
+        state: present
+
+    - name: "Instalar psycopg2 para módulos PostgreSQL"
+      tags: packages
+      pip:
+        name: psycopg2-binary
+        executable: pip3
+
+    - name: "Asegurar que los servicios estén iniciados y habilitados"
+      tags: config
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - redis-server
+        - postgresql
+
+    - name: Create postgres user
+      postgresql_user:
+        state: present
+        name: postgres
+        password: postgres
+      become: true
+      become_user: postgres
+
+    - name: Create PostgreSQL database owned by postgres
+      postgresql_db:
+        state: present
+        name: votes
+        owner: postgres
+      become: true
+      become_user: postgres
+
+
+    - name: "Instalar dependencias de Python desde requirements.txt"
+      tags: deps
+      pip:
+        requirements: /vagrant/roxs-voting-app/vote/requirements.txt
+
+    - name: "Instalar dependencias de Node.js (worker y result)"
+      tags: deps
+      npm:
+        path: "/vagrant/roxs-voting-app/{{ item }}"
+        ci: yes # Usar 'ci' es más rápido y seguro para entornos de despliegue
+      loop:
+        - worker
+        - result
+
+    - name: "Instalar PM2 globalmente para gestionar las apps"
+      tags: deps
+      npm:
+        name: pm2
+        global: yes
+
+  handlers:
+    - name: restart postgresql
+      service:
+        name: postgresql
+        state: restarted
