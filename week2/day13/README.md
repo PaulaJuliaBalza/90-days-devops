@@ -38,46 +38,46 @@ ___
 
 ```
 # ✅ SIN version: - Docker Compose V2 detecta automáticamente la mejor versión
-services:
-  frontend:
+services:                      # define los servicios (contenedores que forman la app). Cada clave bajo services es un servicio independiente
+  frontend:                    # servicio para la app frontend (por ej React)
     build: 
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: ./frontend      # carpeta donde está el código fuente a construiir
+      dockerfile: Dockerfile   # archivo Dockerfile a usar para construir la imagen
     ports:
-      - "3000:3000"
+      - "3000:3000"            # expone el puerto 3000 del contenedor al 3000 de la máquina
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
-    depends_on:
-      - backend
+      - REACT_APP_API_URL=http://localhost:8000  # variables de entorno para el contenedor (ej: url de la API)
+    depends_on:                # indica que servicio depende de que otro (ej: backend) esté listo antes de iniciar
+      - backend                # redes a la que se conecta el servicio
     networks:
       - app-network
-    restart: unless-stopped
+    restart: unless-stopped    # política de reinicio automático si el contenedor se detiene
 
-  db:
-    image: mongo:7-jammy
+  db:                          # servicio para la db de MongoDB
+    image: mongo:7-jammy       # imagen de Docker a usar (ej: mongo:7-jammy)
     ports:
-      - "27017:27017"
+      - "27017:27017"          # expone el puerto estándar de Mongo DB
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_USERNAME=admin        # variables de entorno para inicializar MongoDB (usuario y contraseña)
       - MONGO_INITDB_ROOT_PASSWORD=password123
     volumes:
-      - mongo_data:/data/db
+      - mongo_data:/data/db    # monta un volumen persistente para los datos de la base
     networks:
-      - app-network
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      - app-network            # redes a la que se conecta el servicio
+    healthcheck:               # prueba periódicapara que MongoDB está listo y responde
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]  
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 40s
-    restart: unless-stopped
+    restart: unless-stopped   # política de reinicio automático
 
-networks:
+networks:                     # define redes personalizadas para aislar y conectar servicios entre sí
   app-network:
     driver: bridge
     name: mi-app-network
 
-volumes:
+volumes:                      # define volúmenes persistentes para que los datos no se pierdan si el contenedor se elimina
   mongo_data:
     driver: local
     name: mi-app-mongo-data
